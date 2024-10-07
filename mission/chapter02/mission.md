@@ -140,7 +140,7 @@
 
 ```
 
-### **⚙️ 바텀네비게이션 아이콘을 클릭했을 때 Fragment 전환시키기**
+### **⚙️ 바텀네비게이션 아이콘을 클릭했을 때 Fragment 전환시키기 (애니메이션 추가)**
 
 1. 앱을 처음 실행시킬때 홈 화면으로 설정
     
@@ -149,42 +149,116 @@
     ```
     
 2.  setOnItemSelectedListenter 함수를 사용하여 아이콘을 클릭했을때 표시하고 싶은 화면을 설정
+
     
     ```kotlin
     binding.bottomNav.setOnItemSelectedListener { item ->
-                when (item.itemId) {
-                    R.id.nav_home -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_container, HomeFragment())
-                            .setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout)
-                            .commit()
-                        true
-                    }
-                    R.id.nav_write -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_container, WriteFragment())
-                            .setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout)
-                            .commit()
-                        true
-                    }
-                    R.id.nav_schedule -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_container, ScheduleFragment())
-                            .setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout)
-                            .commit()
-                        true
-                    }
-                    R.id.nav_profile -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_container, ProfileFragment())
-                            .setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout)
-                            .commit()
-                        true
-                    }
-                    else -> false
+        val transaction = supportFragmentManager.beginTransaction()
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    transaction.setCustomAnimations(
+                        R.anim.slide_in_from_left_fade_in,
+                        R.anim.fadeout
+                    )
+                    transaction.replace(R.id.main_container, fragments[0])
+                    transaction.commit()
+                    currentPage = 0
+                    true
                 }
+                R.id.nav_write -> {
+                    if(currentPage < 1) {
+                        transaction.setCustomAnimations(
+                            R.anim.slide_in_from_right_fade_in,
+                            R.anim.fadeout
+                        )
+                    } else {
+                        transaction.setCustomAnimations(
+                            R.anim.slide_in_from_left_fade_in,
+                            R.anim.fadeout
+                        )
+                    }
+                    transaction.replace(R.id.main_container, fragments[1])
+                    transaction.commit()
+                    currentPage = 1
+                    true
+                }
+                R.id.nav_schedule -> {
+                    if(currentPage < 2) {
+                        transaction.setCustomAnimations(
+                            R.anim.slide_in_from_right_fade_in,
+                            R.anim.fadeout
+                        )
+                    } else {
+                        transaction.setCustomAnimations(
+                            R.anim.slide_in_from_left_fade_in,
+                            R.anim.fadeout
+                        )
+                    }
+                    transaction.replace(R.id.main_container, fragments[2])
+                    transaction.commit()
+                    currentPage = 2
+                    true
+                }
+                R.id.nav_profile -> {
+                    transaction.setCustomAnimations(
+                        R.anim.slide_in_from_right_fade_in,
+                        R.anim.fadeout
+                    )
+                    transaction.replace(R.id.main_container, fragments[3])
+                    transaction.commit()
+                    currentPage = 3
+                    true
+                }
+                else -> false
             }
+        }
     ```
     
+3.  애니메이션 설정
 
+    📍현재 페이지 번호를 고려하여 왼쪽 or 오른쪽 화면전환 애니메이션 설정
+
+-**`fade_out.xml`** 
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <set xmlns:android="http://schemas.android.com/apk/res/android">
+        <alpha android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:duration = "200"/>
+    </set>
+    ```
+
+-**`slide_in_from_left_fade_in.xml`** 
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <set xmlns:android="http://schemas.android.com/apk/res/android">
+        <alpha
+        android:duration="200"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+        <translate
+        android:duration="200"
+        android:fromXDelta="-10%"
+        android:interpolator="@android:anim/decelerate_interpolator"
+        android:toXDelta="0%" />
+    </set>
+    ```
+-**`slide_in_from_right_fade_in.xml`** 
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <set xmlns:android="http://schemas.android.com/apk/res/android">
+        <alpha
+        android:duration="200"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+        <translate
+        android:duration="200"
+        android:fromXDelta="10%"
+        android:interpolator="@android:anim/decelerate_interpolator"
+        android:toXDelta="0%" />
+    </set>
+    ```
  ****
